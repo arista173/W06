@@ -8,6 +8,7 @@ import static lab.poker.HandType.*;
 /** Evaluate five distinct cards. See README.md for the rules. */
 public class PokerHandEvaluator {
     public HandType classify(List<Card> hand) {
+        requireFiveCards(hand);
         boolean straight = isStraight(hand);
         boolean flush = isFlush(hand);
         Map<Integer, Integer> counts = rankCounts(hand);
@@ -24,6 +25,7 @@ public class PokerHandEvaluator {
     }
 
     public boolean isStraight(List<Card> hand) {
+        requireFiveCards(hand);
         int[] ranks = hand.stream().mapToInt(Card::rank).sorted().toArray();
         if (ranks[0] == 2 && ranks[1] == 3 && ranks[2] == 4
                 && ranks[3] == 5 && ranks[4] == 14) return true;
@@ -34,6 +36,7 @@ public class PokerHandEvaluator {
     }
 
     public boolean isFlush(List<Card> hand) {
+        requireFiveCards(hand);
         Card.Suit suit = hand.get(0).suit();
         for (int i = 1; i < hand.size(); i++) {
             if (hand.get(i).suit() != suit) return false;
@@ -42,10 +45,8 @@ public class PokerHandEvaluator {
     }
 
     public boolean isFullHouse(List<Card> hand) {
-        Map<Integer, Integer> counts = new HashMap<>();
-        for (Card card : hand) {
-            counts.merge(card.rank(), 1, Integer::sum);
-        }
+        requireFiveCards(hand);
+        Map<Integer, Integer> counts = rankCounts(hand);
         return counts.containsValue(3) && counts.containsValue(2);
     }
 
@@ -55,5 +56,12 @@ public class PokerHandEvaluator {
             counts.merge(card.rank(), 1, Integer::sum);
         }
         return counts;
+    }
+
+    private static void requireFiveCards(List<Card> hand) {
+        if (hand.size() != 5) {
+            throw new IllegalArgumentException(
+                    "hand must contain exactly 5 cards, got " + hand.size());
+        }
     }
 }

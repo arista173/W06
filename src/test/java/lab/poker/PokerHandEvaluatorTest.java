@@ -53,4 +53,16 @@ class PokerHandEvaluatorTest {
         assertTrue(evaluator.isFullHouse(Hands.of("7C 7D 7H 9S 9C")));
         assertFalse(evaluator.isFullHouse(Hands.of("7C 7D 7H 9S KC")));
     }
+    @Test void rejectsEmptyHand() {
+        assertThrows(IllegalArgumentException.class, () -> evaluator.classify(List.of()));
+    }
+    @Test void rejectsShortHand() {
+        assertThrows(IllegalArgumentException.class,
+                () -> evaluator.classify(Hands.of("2C 3D 4H 5S")));
+    }
+    @Test void rejectsEmptyHandForHelper() {
+        assertThrows(IllegalArgumentException.class, () -> evaluator.isStraight(List.of()));
+        assertThrows(IllegalArgumentException.class, () -> evaluator.isFlush(List.of()));
+        assertThrows(IllegalArgumentException.class, () -> evaluator.isFullHouse(List.of()));
+    }
 }
